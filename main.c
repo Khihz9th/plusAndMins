@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define HEIGHT 10
-#define WIDTH 10
+#define HEIGHT 20
+#define WIDTH 20
 #define UP 0
 #define DOWN 1
 #define LEFT 2
@@ -11,35 +11,32 @@
 #define F 0                    //false
 
 int MazeInit(int height, int width, int initValue);                                           //迷宫初始化,二维数组指针还需要去学习。
-int MazeDebugDisp(int maze[HEIGHT][WIDTH], int height, int width, int bool);                            //在终端上显示二维数组的状态
+int MazeDebugDisp(int maze[HEIGHT][WIDTH], int height, int width, int bool);                  //在终端上显示二维数组的状态
 int RandOutDir(int boolOfHead);                                                               //随机生成一个方向
 int DontHitWall(int direction, int x, int y);                                                 //防止撞墙的判定
-int StepCont1(int x, int y, int lastDir, int NowDir, int type, int *dirFix);         //第一种模式运行
-int JudgeOfSpinbool(int bool_init, int change_value); //返回值：T 能够移动  F 不能移动
+int StepCont1(int x, int y, int lastDir, int NowDir, int type, int *dirFix);                  //第一种模式运行
+int JudgeOfSpinbool(int bool_init, int change_value);                                         //返回值：T 能够移动  F 不能移动
 
 int tempdir() //临时使用
 {
     return rand() % 4;
 }
-
 /*
 ### 工作备忘：
 * ~后续需要将函数内的数组改为改为指针传参，两个函数其实变量过于复炸(需要传入的形参和实参过多）后续待优化。~
 * 完成代码的修改
 */
-int maze[HEIGHT][WIDTH]; //迷宫主体
-int headTrack = UP;//0 up, 1, down, 2, left, 3, right. 
-// todo: replace 'temHT' to temTrack;
+int maze[HEIGHT][WIDTH];                        //迷宫主体
+int headTrack = UP;                             //0 up, 1, down, 2, left, 3, right. 
 int tailTrack = DOWN;
-int tempTrack = 0;                                          //临时变量
-int hx = 1, hy = 1;                                     //坐标记忆
+int tempTrack = 0;                              //临时方向变量
+int hx = 1, hy = 1;                             //坐标
 int tx = WIDTH - 2, ty = HEIGHT - 2;
-int dirIn;                                              // direction indicator
-//int judgeOfSpin = UP * 1000 + DOWN * 100 + LEFT * 10 + RIGHT * 1;     //使用前要初始化
+int dirIn;                                      // direction indicator
 int judgeOfSpin[4] = {F, F, F, F};
+
 int main()
 {
-    //int maze[HEIGHT][WIDTH];//迷宫主体
     /*
     有两种信息模式，一种是一个数值储存一个信息，但是导致矩阵的面积增大；
     另一种是一个数值储存多个信息，可以减小矩阵的面积，但是单个数值需要对其进行解译。
@@ -47,7 +44,6 @@ int main()
     */
     MazeInit(HEIGHT, WIDTH, F);
     MazeDebugDisp(maze, HEIGHT, WIDTH, T);
-    //printf("\n");
     /*
     下面的代码是生成主路径，采用一个数值储存一个信息的方式。
     默认：// 实现代码时我好像替换了方向（2021年10月25日）
@@ -60,13 +56,12 @@ int main()
     last edited:2021年10月23日
     */
    
-    int bigLoop = F, littleLoop; //跳出循环
-    int judgeOfMaze; //判断矩阵能否运行
+    int bigLoop = F, littleLoop;                    //跳出循环
+    int judgeOfMaze;                                //判断矩阵能否运行
     
     int n = 0;  //
     int *dirFix = &tempTrack;
     while (bigLoop == F)
-    //for(int jj = 0; jj <105; jj++)
     {
         printf("第%d次循环。\n", ++n);//
         littleLoop = F;
@@ -107,7 +102,6 @@ int main()
         }
         MazeDebugDisp(maze, HEIGHT, WIDTH, T);
         if(bigLoop == T) break;
-        //littleLoop = F;
         JudgeOfSpinbool(T, tailTrack);
         while (littleLoop == F)
         {
@@ -136,7 +130,6 @@ int main()
                 {
                     if(JudgeOfSpinbool(F, 0) == T)
                     {
-                        // littleLoop = 1;
                         bigLoop = T;
                         break;
                     }
@@ -147,153 +140,7 @@ int main()
         printf("\n\n\n");//
         MazeDebugDisp(maze, HEIGHT, WIDTH, F);     
     }
-    
-    //int n = 0;//
-    // while(1)
-    // {
-    //     while(1)
-    //     {
-    //         temHT = randOutDir(1);
-    //         if(temHT == headTrack) continue;
-    //         if(dontHitWall(temHT, hx, hy) == 0) continue;
-    //         switch(temHT)
-    //         {
-    //             case 0:
-    //             hy --;
-    //             if(maze[hy][hx] == 0) 
-    //             {
-    //                 maze[hy][hx] = 1;
-    //                 headTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[hy][hx] == 2)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 1:
-    //             hy ++;
-    //              if(maze[hy][hx] == 0) 
-    //             {
-    //                 maze[hy][hx] = 1;
-    //                 headTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[hy][hx] == 2)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 2:
-    //             hx --;
-    //              if(maze[hy][hx] == 0) 
-    //             {
-    //                 maze[hy][hx] = 1;
-    //                 headTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[hy][hx] == 2)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 3:
-    //             hx ++;
-    //              if(maze[hy][hx] == 0) 
-    //             {
-    //                 maze[hy][hx] = 1;
-    //                 headTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[hy][hx] == 2)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;                
-    //             }
-    //             break;
-    //         }
-    //         if(littleBreak == 1) break;
-    //     }
-    //     littleBreak = 0;
-    //     if(bigLoop == 0) break;
-
-    //     while(1)
-    //     {
-    //         temHT = randOutDir(0);
-    //         if(temHT == tailTrack) continue;
-    //         if(dontHitWall(temHT, tx, ty) == 0) continue;
-    //         switch(temHT)
-    //         {
-    //             case 0:
-    //             ty --;
-    //             if(maze[ty][tx] == 0) 
-    //             {
-    //                 maze[ty][tx] = 2;
-    //                 tailTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[ty][tx] == 1)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 1:
-    //             ty ++;
-    //              if(maze[ty][tx] == 0) 
-    //             {
-    //                 maze[ty][tx] = 2;
-    //                 tailTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[ty][tx] == 1)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 2:
-    //             tx --;
-    //              if(maze[ty][tx] == 0) 
-    //             {
-    //                 maze[ty][tx] = 2;
-    //                 tailTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[ty][tx] == 1)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;
-    //             }
-    //             break;
-    //             case 3:
-    //             tx ++;
-    //              if(maze[ty][tx] == 0) 
-    //             {
-    //                 maze[ty][tx] = 2;
-    //                 tailTrack = temHT;
-    //                 littleBreak = 1;
-    //             }
-    //             else if(maze[ty][tx] == 1)
-    //             {
-    //                 bigLoop = 0;
-    //                 littleBreak = 1;                
-    //             }
-    //             break;
-    //         }
-    //         if(littleBreak == 1) break;
-    //     }
-    //     littleBreak = 0;
-    //     if(bigLoop == 0) break;
-    //     //printf("循环了%d次,\n \n",++n);//
-    // }
-    //MazeDebugDisp(maze, HEIGHT, WIDTH, T);
-
 }
-
 int MazeInit(int height, int width, int initValue)                              //迷宫初始化,二维数组指针还需要去学习。
 {
     /*return bool of initization updated:2021年10月23日 */
@@ -305,13 +152,12 @@ int MazeInit(int height, int width, int initValue)                              
             maze[j][i] = initValue;             //二维数组指针；(2021年10月23日14点12分：对*((*maze)[j] + i) = initValue;为赋值形式存在疑惑)
         }
     }
-    maze[0][0] = maze[1][1] = 1;
+    maze[0][0] = maze[1][1] = maze[0][1] = 1;
+    maze[HEIGHT - 1][WIDTH - 1] = maze[HEIGHT - 1][WIDTH - 2] = maze[HEIGHT - 2][WIDTH - 2] = 2;
     int test_a, test_b;
     test_a = HEIGHT - 1;
     test_b = WIDTH - 1;
-    // printf("test_a = %d, test_b = %d; \n", test_a, test_b);
     maze[test_a][test_b] = maze[test_a -1][test_b - 1] = 2;
-    // printf("maze[test_a][test_b] = %d\n", maze[test_a][test_b]);
     return boolOfMaze;                                                  // 目前找不到报错的环境
 }
 int MazeDebugDisp(int maze[HEIGHT][WIDTH], int height, int width, int bool)//在终端上显示二维数组的状态
@@ -342,7 +188,7 @@ int RandOutDir(int boolOfHead) //随机生成一个方向
     int returnValue;
     ra = rand() % 10;
     //printf("生成的随机数是：%d \n", ra);//
-    if(ra >= 0 && ra <= 2) returnValue = 0;
+    if(ra >= 0 && ra <= 2)      returnValue = 0;
     else if(ra >= 3 && ra <= 5) returnValue = 1;
     else if(ra >= 6 && ra <= 7) returnValue = 2;
     else returnValue = 3;
@@ -354,26 +200,6 @@ int RandOutDir(int boolOfHead) //随机生成一个方向
     }
     return returnValue; 
 }
-// int DontHitWall(int direction, int x, int y)
-// {
-//     int returnValue = 1;
-//     switch(direction)
-//     {
-//         case 0:
-//         if(y == 1) returnValue = 0; 
-//         break;
-//         case 1:
-//         if(y == HEIGHT - 2) returnValue = 0;
-//         break;
-//         case 2:
-//         if(x == 1) returnValue = 0;
-//         break;
-//         case 3:
-//         if(x == WIDTH - 2) returnValue = 0;
-//         break;
-//     }
-//     return returnValue;
-// }
 int StepCont1(int x, int y, int lastDir, int NowDir, int type, int *dirFix)//第一种函数运行
 {
     //0 up, 1, down, 2, left, 3, right. 
@@ -388,9 +214,6 @@ int StepCont1(int x, int y, int lastDir, int NowDir, int type, int *dirFix)//第
     //行进赋值
     int inputValue = 1;
     if(type == 2) inputValue = 2; //type 1, 正方向, type 2, 反方向
-    
-   //自身碰撞判定
-   //测试中...
     switch (NowDir) //这个也需要标记检测
     {
         case UP:
@@ -474,8 +297,7 @@ int StepCont1(int x, int y, int lastDir, int NowDir, int type, int *dirFix)//第
     errHappen:
     return returnValue;
 }
-//
-int JudgeOfSpinbool(int bool_init, int change_value) //返回值：T 能够移动  F 不能移动
+int JudgeOfSpinbool(int bool_init, int change_value) //返回值：T 不能移动  F 能移动
 {
     int returnValue = T;
     if(bool_init == T)
